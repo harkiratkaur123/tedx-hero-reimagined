@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #050505;
+  --color-ink-soft: #0d0d0f;
+  --color-ted: #eb0028;
+  --color-ted-bright: #ff1f3d;
+  --font-sans: 'Helvetica Neue', Helvetica, Arial, 'Segoe UI', Roboto, sans-serif;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-ink);
+  color: #f4f4f5;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Marquee bulbs warming up as the sign sets in */
+@keyframes bulbOn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Multi-step form panel slide-in */
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.step-in {
+  animation: stepIn 0.25s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* thin scrollbar so the reveal reads cleanly */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #1c1c1f;
+  border-radius: 9999px;
+}
