@@ -11,6 +11,8 @@ export const GLYPHS: Record<string, Glyph> = {
   E: { w: 58, strokes: [`M56 6 H8 V${H} H56`, `M8 55 H46`] },
   D: { w: 70, strokes: [`M10 6 V${H} M10 6 H34 Q64 6 64 55 Q64 ${H} 34 ${H} H10`] },
   X: { w: 66, strokes: [`M4 6 L62 ${H}`, `M62 6 L4 ${H}`] },
+  // lowercase x — half cap-height, sits on the baseline so the sign reads "TEDxIGDTUW"
+  x: { w: 46, strokes: [`M6 54 L40 ${H}`, `M40 54 L6 ${H}`] },
   I: { w: 40, strokes: [`M20 6 V${H}`, `M6 6 H34`, `M6 ${H} H34`] },
   G: { w: 74, strokes: [`M64 14 A34 46 0 1 0 64 96 L64 56 L44 56`] },
   U: { w: 70, strokes: [`M6 6 V56 Q6 ${H} 38 ${H} Q70 ${H} 70 56 V6`] },

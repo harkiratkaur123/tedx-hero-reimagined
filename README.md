@@ -1,9 +1,9 @@
 # TEDxIGDTUW — Hero, Reimagined
 
 A single cohesive feature for [tedx-igdtuw.vercel.app](https://tedx-igdtuw.vercel.app):
-an **interactive hero** that replaces the static curtain with a staged reveal, and
-turns the site's one off-site call-to-action into **two clear, on-site doors —
-Get Tickets and Apply to Speak.**
+an **animated hero** that replaces the static curtain image with a curtain that
+actually *opens*, and turns the site's one off-site call-to-action into **two
+clear, on-site doors — Get Tickets and Apply to Speak.**
 
 > Prototype for the TEDxIGDTUW Web Development practical assessment. Not affiliated
 > with TED; "TEDx" is used here only to mock up the existing event site.
@@ -14,9 +14,9 @@ Get Tickets and Apply to Speak.**
 
 | Part | What it does |
 | --- | --- |
-| **Staged hero reveal** | On load, an intro clip plays — a camera turns into view, its screen lights up with footage, and it pushes toward that screen. At the end the shot scales *into* the screen and cross-fades to the hero. |
+| **Curtain reveal** | The page loads with two dark-oxblood curtain panels covering the screen — the event footage is *already playing* full-bleed behind them. At `300ms` the curtains pull apart (`1.15s`, `cubic-bezier(.76,0,.24,1)`); at `~1700ms` the wordmark and CTAs fade/slide up over the video. A "Skip intro" button jumps to the end state. |
 | **Marquee bulb sign** | `TEDXIGDTUW` is rendered as a rented-style marquee letter sign — every glyph traced out in two rows of bulbs. Bulbs rest at a warm glow and **light up red where the cursor gets close**, like a real bulb sign reacting to touch. |
-| **Dimmed event footage** | Behind the sign, a muted B&W loop of past TEDxIGDTUW talks plays at reduced opacity. |
+| **Dimmed event footage** | Behind the sign, a muted B&W loop of past TEDxIGDTUW talks plays under a light scrim. |
 | **Get Tickets** (in-site) | A 3-step registration flow — tier + quantity → attendee details (validated) → review → a mock ticket with a generated code. No redirect. |
 | **Apply to Speak** (in-site) | A separate 4-step application scoped to speakers — talk idea → about you → links → review → submitted, with "what happens next". |
 | **Local persistence** | Both forms save to `localStorage`. `/dev/submissions` (unlinked) is a dev-only window onto what was captured. |
@@ -31,7 +31,7 @@ into one form.
 
 This feature fixes both halves at once:
 
-1. **A hero that performs the reveal** instead of just depicting a curtain.
+1. **A curtain that performs the reveal** instead of a picture of one.
 2. **Two on-site entry points** — because attendees and speakers are different
    funnels with different questions and different review processes. Splitting them
    back apart is part of the fix, not an extra feature.
@@ -40,23 +40,29 @@ This feature fixes both halves at once:
 
 | | |
 | --- | --- |
-| ![Hero at rest](docs/hero.jpg) | ![Bulbs lighting red under the cursor](docs/hero-cursor-glow.jpg) |
-| *Hero — marquee bulb sign over dimmed event footage* | *Bulbs light red where the cursor gets close* |
-| ![Get Tickets](docs/get-tickets.jpg) | ![Apply to Speak](docs/apply-to-speak.jpg) |
-| *Get Tickets — in-site, no Google Form* | *Apply to Speak — a separate speaker application* |
+| ![Curtains closed on load](docs/curtain.jpg) | ![Hero after the curtains open](docs/hero.jpg) |
+| *0ms — oxblood curtains, footage already playing behind* | *After the reveal — marquee bulb sign over the footage* |
+| ![Bulbs lighting red under the cursor](docs/hero-cursor-glow.jpg) | ![Get Tickets](docs/get-tickets.jpg) |
+| *Bulbs light red where the cursor gets close* | *Get Tickets — in-site, no Google Form* |
+| ![Apply to Speak](docs/apply-to-speak.jpg) | |
+| *Apply to Speak — a separate speaker application* | |
 
 ## Key technical & design decisions
 
 - **React + Vite + TypeScript + Tailwind v4.** SPA is the right shape for a
   single animated screen; no backend needed for a prototype. Tailwind v4's
-  `@theme` holds the four design tokens (`ink`, `ted`, …).
+  `@theme` holds the handful of design tokens (`ink`, `ted`, …).
+- **The curtain choreography is ported from a tested reference**, not
+  re-invented — exact timings (`300ms` open, `~1700ms` text), the
+  `cubic-bezier(.76,0,.24,1)` transition, and the oxblood
+  `repeating-linear-gradient` are carried over verbatim into
+  `HeroSequence.tsx` / the `.curtain` rules in `index.css`. The raw DOM
+  class-toggling became `useState` + `useEffect` timers.
 - **Animation is pure CSS transitions, not a JS animation library.** I started
   with Framer Motion and removed it. CSS transitions are time-based and keep
   running when the tab is backgrounded, whereas `requestAnimationFrame`-driven
   libraries freeze mid-animation until the tab is focused — a real bug for a
   hero that auto-plays on load. Dropping it also cut the JS bundle ~120 KB.
-  The sequence is a tiny state machine (`intro → reveal → hero`) driven by
-  `setTimeout` + the intro `<video>`'s own `timeupdate`/`ended` events.
 - **The marquee letters are sampled SVG paths.** Each glyph is one or two stroke
   paths in a normalised box (`src/components/hero/letterPaths.ts`); at render
   time the browser's `getPointAtLength` walks each path and drops a bulb every
@@ -73,10 +79,10 @@ This feature fixes both halves at once:
   resting hero; the intro is skippable by button or any keypress; modals trap
   focus, close on Esc/backdrop, lock body scroll; all inputs have real labels
   and `aria-invalid`.
-- **Video pipeline.** The source clips are screen recordings (HEVC, full-range).
-  `scripts/encode-hero.mjs` normalises them to web-safe H.264 / `yuv420p` /
+- **Video pipeline.** The source clip is a screen recording (HEVC, full-range).
+  `scripts/encode-hero.mjs` normalises it to web-safe H.264 / `yuv420p` /
   `+faststart` via `ffmpeg-static` — browsers' demuxers stall silently on the
-  raw files. Output: `intro.mp4` (~0.75 MB), `hero-loop.mp4` (~3 MB).
+  raw file. Output: `public/media/hero-loop.mp4` (~3 MB).
 
 ## Run it
 
@@ -99,11 +105,13 @@ serve `dist/` with a catch-all rewrite to `/`.
 
 ## AI tools used
 
-- **Claude (Claude Code)** — paired on the whole build: scaffolding, the
-  path-sampling marquee, the CSS-transition state machine, form validation, and
-  debugging the video-codec issue. I reviewed and understand every file; the
-  design decisions above are the ones I made and can defend.
-- The source video clips are my own screen recordings; `ffmpeg` (via
+- **Claude (Claude Code)** — paired on the whole build: scaffolding, porting the
+  curtain reference into a React component, the path-sampling marquee, form
+  validation, and debugging the video-codec issue. I reviewed and understand
+  every file; the design decisions above are the ones I made and can defend.
+- The curtain intro was specified from a browser-tested vanilla HTML/CSS/JS
+  reference (timings, easing, colours); I ported it 1:1.
+- The source video clip is my own screen recording; `ffmpeg` (via
   `ffmpeg-static`) did the transcoding.
 
 ## What I'd improve with more time
@@ -115,11 +123,9 @@ serve `dist/` with a catch-all rewrite to `/`.
 - **Real ticket codes.** The success screen shows a QR-styled block generated
   from the ticket id; it isn't a scannable code. Real ticketing issues one
   server-side.
-- **Intro polish.** The intro clip still carries its social-media UI chrome; a
-  clean re-cut on a black background would match the site better. The hand-off
-  into the hero could also share a single continuous video rather than a
-  cross-fade.
 - **Backend.** Swap `localStorage` for a real endpoint (Vercel function +
   a DB / a form service) and send confirmation emails.
+- **Curtain fabric.** The panels are a tuned CSS gradient; a real fabric texture
+  + a slight billow on open would sell the theatre feel further.
 - **Tests.** Unit-test the form validation and the path sampler; a visual
   regression check on the hero.

@@ -3,7 +3,7 @@
 
 export const EVENT = {
   name: 'TEDxIGDTUW',
-  wordmark: 'TEDXIGDTUW', // exact string rendered as the marquee sign
+  wordmark: 'TEDxIGDTUW', // exact string rendered as the marquee sign (lowercase x, like the logo)
   theme: 'Beyond Barriers',
   tagline: 'A day of ideas worth spreading — reimagined for the stage.',
   date: 'Saturday, 11 October 2026',

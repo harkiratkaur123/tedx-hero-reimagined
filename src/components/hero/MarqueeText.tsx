@@ -131,7 +131,7 @@ function computeBulbs(text: string): { bulbs: Bulb[]; viewW: number } {
   const bulbs: Bulb[] = []
   let cursorX = 0
 
-  for (const ch of text.toUpperCase()) {
+  for (const ch of text) {
     const glyph: Glyph | undefined = GLYPHS[ch]
     if (!glyph) {
       cursorX += 40 + GAP
