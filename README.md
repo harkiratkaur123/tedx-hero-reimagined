@@ -1,6 +1,8 @@
 # TEDxIGDTUW — Hero, Reimagined
 
-A single cohesive feature for [tedx-igdtuw.vercel.app](https://tedx-igdtuw.vercel.app):
+**Live demo → [tedx-hero-reimagined.vercel.app](https://tedx-hero-reimagined.vercel.app)**
+
+A single cohesive feature for the [TEDxIGDTUW site](https://tedx-igdtuw.vercel.app):
 an **animated hero** that replaces the static curtain image with a curtain that
 actually *opens*, and turns the site's one off-site call-to-action into **two
 clear, on-site doors — Get Tickets and Apply to Speak.**
