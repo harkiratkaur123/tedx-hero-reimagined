@@ -15,26 +15,57 @@ clear, on-site doors — Get Tickets and Apply to Speak.**
 | Part | What it does |
 | --- | --- |
 | **Curtain reveal** | The page loads with two dark-oxblood curtain panels covering the screen — the event footage is *already playing* full-bleed behind them. At `300ms` the curtains pull apart (`1.15s`, `cubic-bezier(.76,0,.24,1)`); at `~1700ms` the wordmark and CTAs fade/slide up over the video. A "Skip intro" button jumps to the end state. |
-| **Marquee bulb sign** | `TEDXIGDTUW` is rendered as a rented-style marquee letter sign — every glyph traced out in two rows of bulbs. Bulbs rest at a warm glow and **light up red where the cursor gets close**, like a real bulb sign reacting to touch. |
+| **Marquee bulb sign** | `TEDxIGDTUW` is rendered as a rented-style marquee letter sign — every glyph traced out in two rows of bulbs. Bulbs rest at a warm glow and **light up red where the cursor gets close**, like a real bulb sign reacting to touch. |
 | **Dimmed event footage** | Behind the sign, a muted B&W loop of past TEDxIGDTUW talks plays under a light scrim. |
 | **Get Tickets** (in-site) | A 3-step registration flow — tier + quantity → attendee details (validated) → review → a mock ticket with a generated code. No redirect. |
 | **Apply to Speak** (in-site) | A separate 4-step application scoped to speakers — talk idea → about you → links → review → submitted, with "what happens next". |
 | **Local persistence** | Both forms save to `localStorage`. `/dev/submissions` (unlinked) is a dev-only window onto what was captured. |
 
-## The problem it solves
+## The problem
 
-The current homepage opens on a **static theatre-curtain image**. It doesn't move,
-doesn't introduce the event, and its single button sends visitors **off-site to a
-Google Form** — breaking the experience at the moment someone is most interested,
-and funnelling two very different audiences (attendees and prospective speakers)
-into one form.
+I looked at the current homepage and found **two problems in the same square inch
+of screen** — the first thing every visitor sees.
 
-This feature fixes both halves at once:
+**1. The hero doesn't do anything.**
+The page opens on a *static* theatre-curtain image. It never moves, never opens,
+and never introduces the event. A curtain is a promise that something is about to
+happen; a picture of a closed curtain just sits there. The one moment you have a
+visitor's full attention — the first second — is spent on a still image.
 
-1. **A curtain that performs the reveal** instead of a picture of one.
-2. **Two on-site entry points** — because attendees and speakers are different
-   funnels with different questions and different review processes. Splitting them
-   back apart is part of the fix, not an extra feature.
+**2. The only call-to-action leaves the site.**
+There is a single button, and it points at an external **Google Form**. Two things
+go wrong here:
+- It **breaks the journey** at the exact moment someone decided they're interested
+  — you send them to a different domain, a different design, a login wall.
+- It **treats two totally different people as one**. Someone who wants to *attend*
+  and someone who wants to *speak* need different questions asked, go through
+  different review processes, and hear back in different ways. One shared Google
+  Form serves neither well.
+
+## The solution
+
+**One feature, fixing both halves.**
+
+**A curtain that actually opens.** On load, two dark-oxblood curtains cover the
+screen — and the event footage is *already playing* behind them (it isn't waiting
+on the animation). After a beat the curtains pull apart and reveal the footage,
+then the `TEDxIGDTUW` marquee sign and the two buttons rise into view. The hero
+now *performs* the "the show is starting" idea instead of depicting it. It's
+skippable, and it respects `prefers-reduced-motion`.
+
+**Two on-site doors instead of one off-site form.**
+- **Get Tickets** → an in-site registration flow: pick a tier, enter details
+  (validated inline), review, and get a mock ticket with a code. No redirect.
+- **Apply to Speak** → a *separate* in-site application scoped to speakers — talk
+  idea, short bio, links, review, and a clear "what happens next".
+
+Splitting the funnels back apart is the point, not a bonus: the friction the
+Google Form created was mixing two audiences, so un-mixing them *is* the fix.
+
+Both flows save submissions to `localStorage` for this prototype; a real build
+would post to an endpoint. A passcode-gated page for the team to review those
+submissions is the obvious next step and is deliberately left out of this scope
+(see *What I'd improve*).
 
 ## Screenshots
 
